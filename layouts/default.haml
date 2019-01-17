@@ -1,0 +1,40 @@
+!!!
+%html{lang: @item[:lang] || "et"}
+	%head
+		%meta(charset="utf-8")
+		%title= @item[:title] + (@item[:page] != "home" ? " - Uus Eakus" : "")
+		%meta(name="generator" content="Nanoc #{Nanoc::VERSION}")
+		%meta(name="viewport" content="width=device-width, initial-scale=1")
+		%link(rel="stylesheet" href="/assets/default.css")
+
+		- if @config[:env] == "production"
+			:javascript
+				function args() { return arguments }
+				dataLayer = [args("js", new Date), args("config", "UA-15482981-17")]
+			%script(async src="https://www.googletagmanager.com/gtag/js?id=UA-122944734-1")
+
+	%body{id: item[:page] && "#{item[:page]}-page"}
+		%nav#nav
+			%center
+				%a.home(href="/")
+					%img(src="/assets/uuseakus.png" alt="Uus Eakus")
+
+				%menu
+					%a{link_to_unless_current("/rahvakogust/")} Rahvakogust
+					%a{link_to_unless_current("/ideed/")} Ettepanekud
+					%a(href="https://rahvaalgatus.ee/initiatives?category=uuseakus")
+						Algatused
+
+		#main= yield
+
+		%footer#footer
+			%center
+				%p#contact
+					%strong Uue eakuse rahvakogu kontaktid<br>
+					programmijuht Liisi Uder<br>
+					<strong>e-post</strong>:
+					<a href="mailto:liisi.uder@kogu.ee">liisi.uder@kogu.ee</a><br>
+					<strong>tel</strong>:
+					<a href="tel:+3726408716">+372 6408716</a><br>
+					<a href="http://pension2050.kogu.ee">http://pension2050.kogu.ee</a>
+					

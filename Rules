@@ -1,0 +1,45 @@
+require "kramdown"
+
+preprocess do
+  @config[:env] = ENV["ENV"] if ENV["ENV"]
+end
+
+filter_with_kramdown = proc do |item|
+	item.filter :kramdown, parse_block_html: true
+end
+
+ignore "/**/_*"
+
+compile "/home.haml" do
+	filter :haml, remove_whitespace: true
+	layout "/default.*"
+	write "/index.html"
+end
+
+compile "/**/*.haml" do
+	filter :haml, remove_whitespace: true
+	layout "/default.*"
+	write item.identifier.without_ext + "/index.html"
+end
+
+compile "/**/*.md" do
+	filter_with_kramdown[self]
+	layout "/text.*"
+	layout "/default.*"
+	write item.identifier.without_ext + "/index.html"
+end
+
+compile "/**/*.scss" do
+	filter :sass, syntax: :scss, style: :compact, cache_location: "tmp/sass-cache"
+	write item.identifier.without_ext + ".css"
+end
+
+compile "/**/*" do
+	write item.identifier.to_s
+end
+
+compile "/.htaccess" do
+	write item.identifier.to_s
+end
+
+layout "/**/*", :haml, remove_whitespace: true

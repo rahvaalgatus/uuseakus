@@ -1,0 +1,275 @@
+@import "reset";
+$page-width: 100rem;
+$page-padding: 6rem;
+$page-padding-mobile: 2rem;
+$text-size: 1.6rem;
+$text-line-height: 1.6;
+$tablet-width: 865px;
+$mobile-width: 569px;
+$grey-background: #f2f2f2;
+$text-section-width: 80rem;
+$body-font: Aino, sans-serif;
+$text: #222;
+$purple: #312f9d;
+$link: #0078ff;
+$link: #339;
+
+@mixin tablet {
+  @media only screen and (min-width: $mobile-width + 1px) and
+    (max-width: $tablet-width) { @content }
+}
+
+@mixin tablet-and-mobile {
+  @media only screen and (max-width: $tablet-width) { @content }
+}
+
+@mixin mobile {
+  @media only screen and (max-width: $mobile-width) { @content }
+}
+
+@font-face {
+  font-family: "Aino";
+  font-weight: normal;
+  font-style: normal;
+
+  src: url("/assets/aino-regular.eot");
+  src:
+		url("/assets/aino-regular.eot?#iefix") format("embedded-opentype"),
+		url("/assets/aino-regular.woff") format("woff"),
+		url("/assets/aino-regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Aino";
+  font-weight: bold;
+  font-style: normal;
+
+  src: url("/assets/aino-bold.eot");
+  src:
+		url("/assets/aino-bold.eot?#iefix") format("embedded-opentype"),
+		url("/assets/aino-bold.woff") format("woff"),
+		url("/assets/aino-bold.ttf") format("truetype");
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	background-color: white;
+	font-family: $body-font;
+	display: flex;
+	flex-direction: column;
+	color: $text;
+
+	// Without an explicit text-align, Internet Explorer (9 at least) has no
+	// text-align value to inherit from for <center>.
+	text-align: left;
+}
+
+strong { font-weight: bold; }
+big { font-size: 130%; }
+
+section center {
+	padding-top: 6rem;
+	padding-bottom: 6rem + 2rem; // + a little to compensate for line height.
+
+	@include mobile {
+		padding-top: 4rem;
+		padding-bottom: 4rem;
+	}
+}
+
+center {
+	max-width: $page-width;
+	margin: 0 auto;
+	padding: 0 $page-padding;
+	text-align: inherit;
+
+	@include mobile {
+		padding-left: $page-padding-mobile;
+		padding-right: $page-padding-mobile;
+	}
+
+	// Internet Explorer still centers things under <center> even with
+	// text-align: inherit.
+	& > * { margin-right: auto }
+}
+
+.white-section {
+	& + .white-section center { padding-top: 0; }
+}
+
+.grey-section { background-color: $grey-background; }
+
+.text-section {
+	font-size: $text-size;
+	line-height: $text-line-height;
+	hyphens: manual;
+
+	center {
+		max-width: $text-section-width;
+	}
+
+	* + h2 { margin-top: 4rem; }
+	* + h3 { margin-top: 4rem; }
+
+	ul {
+		margin: ($text-size * $text-line-height) 0;
+
+		li {
+			margin-left: 4rem;
+			list-style-type: disc;
+		}
+	}
+
+	img {
+		max-width: 100%;
+	}
+}
+
+.heading,
+.text-section h1 {
+	font-size: 3.4rem;
+	color: $purple;
+	margin-bottom: 2rem;
+	line-height: 1.5;
+
+	@include mobile { font-size: 3rem; }
+}
+.subheading,
+.text-section h2 {
+	font-size: 2.6rem;
+	color: $purple;
+	margin-bottom: 2rem;
+	line-height: 1.5;
+}
+
+.subsubheading,
+.text-section h3 {
+	color: $purple;
+	font-size: 2rem;
+	line-height: 1.5;
+}
+
+.paragraph,
+.text-section p {
+	font-size: $text-size;
+	line-height: $text-line-height;
+
+	& + p { margin-top: 1.6 * 1.6rem; }
+}
+
+.paragraph a,
+.text-section a {
+	color: $link;
+	border-bottom: 1px solid $link;
+
+	&:visited {
+		color: lighten($link, 20%);
+		border-color: lighten($link, 50%);
+	}
+}
+
+#nav,
+#footer { color: white; background: $purple; }
+
+#main {
+	flex-grow: 1;
+}
+
+#nav {
+	padding: 2rem 0;
+	line-height: 3rem;
+
+	.home {
+		display: inline-block;
+		vertical-align: top;
+		font-weight: bold;
+		font-size: 1.8rem;
+		height: 3rem;
+		margin-right: 2rem;
+
+		img { height: 100%; }
+	}
+
+	menu a {
+		display: inline-block;
+		padding: 0 1rem;
+	}
+
+	menu {
+		float: right;
+	}
+
+	menu a {
+		border-radius: 0.3rem;
+		border: 1px solid transparent;
+		font-size: 1.3rem;
+		margin-left: 0.3rem;
+
+		&.selected {
+			color: $purple;
+			background-color: white;
+			font-weight: bold;
+		}
+
+		&:hover {
+			border-color: white;
+		}
+	}
+
+	@include mobile {
+		line-height: 2;
+
+		padding: 2rem 0 1rem;
+		center { padding: 0 2rem; }
+		.home { display: block; font-size: 2.4rem; }
+		menu { float: none; }
+		menu a { margin: 0.5rem 0.5rem 0.1rem 0; }
+	}
+}
+
+#home-page {
+	#welcome {
+		p {
+			width: 50%;
+			padding-right: 2rem;
+		}
+
+		iframe {
+			float: right;
+			width: 44rem;
+			max-width: 50%;
+			height: 44rem * 9 / 16;
+			margin-bottom: 3rem;
+		}
+
+		menu {
+			clear: both;
+			margin-top: 4rem;
+			text-align: center;
+
+			a { margin-right: 4rem; }
+		}
+
+		@include tablet-and-mobile {
+			p { width: auto; padding-right: 0; }
+			iframe { float: none; width: 100%; max-width: none; }
+		}
+	}
+}
+
+#footer {
+	padding: 4rem 0;
+	font-size: 1.4rem;
+	line-height: 1.6;
+
+	h2 {
+		font-weight: bold;
+		margin-bottom: 1rem;
+	}
+
+	a { text-decoration: underline; }
+}

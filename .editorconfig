@@ -1,0 +1,14 @@
+root = true
+
+[Makefile]
+indent_style = tab
+
+[{Rules,Gemfile,Guardfile}]
+indent_style = tab
+
+[*.{js,json,rb,haml}]
+indent_style = tab
+
+[*.yaml]
+indent_style = space
+indent_size = 2

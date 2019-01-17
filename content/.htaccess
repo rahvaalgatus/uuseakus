@@ -1,0 +1,11 @@
+RewriteEngine on
+RewriteRule ^about/?$ /rahvakogust/ [last,redirect=permanent]
+RewriteRule ^effective-ideas/?$ /ideed/ [last,redirect=permanent]
+RewriteRule ^effective-ideas/government/?$ /riiklikult-lahendatavad-ideed/ [last,redirect=permanent]
+RewriteRule ^effective-ideas/governmental/?$ /riiklikult-lahendatavad-ideed/ [last,redirect=permanent]
+RewriteRule ^(initiatives(/.*)?)$ https://rahvaalgatus.ee/$1 [last,redirect=permanent]
+
+<FilesMatch "\.(html|js|json|css|eot|woff|woff2|ttf|jpg|jpeg|png|svg)$">
+Header edit ETag "^\"(.+)-gzip\"$" "\"$1\"" "expr=resp('Content-Encoding') == 'gzip'"
+Header set Cache-Control "max-age=0, public, must-revalidate"
+</FilesMatch>

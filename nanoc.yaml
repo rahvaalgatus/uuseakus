@@ -1,0 +1,24 @@
+output_dir: public
+
+prune:
+  auto_prune: true
+
+data_sources:
+  - type: filesystem
+    encoding: utf-8
+    extra_files:
+      - "**/.htaccess"
+
+deploy:
+  default:
+    kind: rsync
+    dst: "uuseakus.rahvaalgatus.ee:domeenid/www.rahvaalgatus.ee/uuseakus"
+    options: &rsync_options
+      - "--verbose"
+      - "--recursive"
+      - "--compress"
+      - "--itemize-changes"
+      - "--times"
+      - "--omit-dir-times"
+      - "--delete-after"
+      - "--chmod=u=rwX,go=rX"

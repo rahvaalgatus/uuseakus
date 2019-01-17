@@ -1,0 +1,14 @@
+{
+	"name": "uuseakus",
+	"version": "0.0.0",
+	"private": true,
+
+	"devDependencies": {
+		"mocha": ">= 2.1.0 < 3",
+		"co-mocha": ">= 1.1.0 < 2",
+		"must": ">= 0.13 < 0.14",
+		"fetch-off": ">= 1.0.0 < 2",
+		"fetch-defaults": ">= 1.0.0 < 2",
+		"oolong": ""
+	}
+}
