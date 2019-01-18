@@ -1,0 +1,147 @@
+#!/usr/bin/env node
+var O = require("oolong")
+var Qs = require("querystring")
+var Https = require("https")
+var differenceInCalendarDays = require("date-fns").differenceInCalendarDays
+var co = require("co")
+var fetch = require("fetch-off")
+var concat = Array.prototype.concat.bind(Array.prototype)
+var getData = O.property("data")
+var getRows = O.property("rows")
+var API_URL = "https://cos.rahvaalgatus.ee"
+var PARTNER_ID = "a4cc118f-69f3-4708-8f84-d3f46ad1d63b"
+var VOTES_REQUIRED = 1000
+var ESTONIAN = require("./vision_texts")
+
+var cos = require("fetch-defaults")(fetch, API_URL, {
+	timeout: 10000,
+	headers: {Accept: "application/json"},
+	agent: new Https.Agent({keepAlive: true, maxSockets: 30})
+})
+
+co(function*() {
+	var initiatives = yield {
+		discussions: readInitiativesWithStatus("inProgress"),
+		votings: readInitiativesWithStatus("voting"),
+		processes: readInitiativesWithStatus("followUp"),
+	}
+
+	var initiativesForVision = concat(
+		initiatives.discussions,
+		initiatives.votings,
+		initiatives.processes
+	).map(serializeForVision)
+
+	console.log(JSON.stringify(initiativesForVision, null, "\t"))
+}).catch(function(ex) {
+	console.error(ex)
+	process.exit(1)
+})
+
+function serializeForVision(initiative) {
+	var sigs
+	var progress
+	var progressText = ""
+	var createdAt = new Date(initiative.createdAt)
+
+	switch (initiative.status) {
+		case "inProgress":
+			if (!hasDiscussionEnded(new Date, initiative)) {
+				var passed = differenceInCalendarDays(new Date, createdAt)
+				var total = daysInDiscussion(initiative)
+
+				progress = passed / total
+				progressText = t("TXT_DEADLINE_CALENDAR_DAYS_LEFT", {
+					numberOfDaysLeft: total - passed
+				})
+			}
+			else {
+				progress = "completed"
+				progressText = t("DISCUSSION_FINISHED")
+			}
+			break
+
+		case "voting":
+			sigs = countSignatures("Yes", initiative)
+
+			if (isSuccessful(initiative)) {
+				progress = "completed"
+				progressText = t("N_SIGNATURES_COLLECTED", {votes: sigs})
+			}
+			else if (!hasVoteEnded(new Date, initiative)) {
+				progress = sigs / VOTES_REQUIRED
+				progressText = t("N_SIGNATURES", {votes: sigs})
+			}
+			else {
+				progress = "failed"
+				progressText = t("N_SIGNATURES_FAILED", {votes: sigs})
+			}
+			break
+
+		case "followUp":
+			sigs = countSignatures("Yes", initiative)
+			progress = 1
+			progressText = t("N_SIGNATURES", {votes: sigs})
+			break
+	}
+
+	return {
+		id: initiative.id,
+		url: `https://rahvaalgatus.ee/initiatives/${initiative.id}`,
+		title: initiative.title,
+		subtitle: t(`${initiative.id}_SUBTITLE`),
+		categories: initiative.categories,
+		status: initiative.status,
+		progress: progress,
+		progressText: progressText
+	}
+}
+
+function readInitiativesWithStatus(status) {
+	return cos("/api/topics?" + Qs.stringify({
+		"include[]": ["vote", "event"],
+		limit: 100,
+		statuses: status,
+		sourcePartnerId: PARTNER_ID
+	})).then(getJson).then(getData).then(getRows)
+}
+
+function hasVoteEnded(now, initiative) {
+	return (
+		initiative.status === "followUp" ||
+		new Date(initiative.vote.endsAt) <= now
+	)
+}
+
+function isSuccessful(initiative) {
+	return countSignatures("Yes", initiative) >= VOTES_REQUIRED
+}
+
+function countSignatures(value, initiative) {
+	var option = initiative.vote.options.rows.find((opt) => opt.value === value)
+	return option && option.voteCount || 0
+}
+
+function hasDiscussionEnded(now, initiative) {
+	return (
+		initiative.status == "closed" ||
+		new Date(initiative.endsAt) <= now
+	)
+}
+
+function daysInDiscussion(initiative) {
+	return differenceInCalendarDays(initiative.endsAt, initiative.createdAt) + 1
+}
+
+function t(key, props) {
+	var text = ESTONIAN[key]
+	return text == null ? null : props == null ? text : interpolate(text, props)
+}
+
+function interpolate(string, props) {
+	return string.replace(/\{\{(\w+)\}\}/g, function(_match, key) {
+		return props[key]
+	})
+}
+
+function getJson(res) { return res.json() }

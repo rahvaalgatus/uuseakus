@@ -43,6 +43,9 @@ deploy: compile
 shrinkwrap:
 	npm shrinkwrap --dev
 
+content/initiatives.json: scripts/get-initiatives
+	scripts/get-initiatives > "$@"
+
 .PHONY: love
 .PHONY: compile autocompile
 .PHONY: server autoserver

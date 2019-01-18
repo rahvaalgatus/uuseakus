@@ -1,4 +1,5 @@
 output_dir: public
+text_extensions: ["haml", "md", "css", "scss", "json"]
 
 prune:
   auto_prune: true

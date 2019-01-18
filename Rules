@@ -34,6 +34,17 @@ compile "/**/*.scss" do
 	write item.identifier.without_ext + ".css"
 end
 
+compile "/javascripts/vision.jsx" do
+	filter :browserify,
+		args: %w[--no-detect-globals --extension=jsx],
+		export: "@uuseakus/vision"
+
+	write "/assets/vision.js"
+end
+
+ignore "/javascripts/**/*"
+ignore "/initiatives.json"
+
 compile "/**/*" do
 	write item.identifier.to_s
 end

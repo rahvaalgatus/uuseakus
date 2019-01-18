@@ -26,3 +26,21 @@ page: home
 			haakuvad. Anna oma toetusallkiri neile ettepanekutele, mis aitavad
 			tuleviku eakust kujundada. Riigikogu arutab igat ettepanekut, mis on
 			kogunud 1000 digiallkirja.
+
+%section#vision-section.grey-section
+	%center
+
+%script(src="/assets/vision.js")
+
+:javascript
+	var Viz = require("@uuseakus/vision")
+	var section = document.getElementById("vision-section")
+
+	var viz = new Viz({
+		initiatives: #{escape_json(@items["/initiatives.json"].compiled_content)},
+		maxWidth: section.offsetWidth
+	})
+
+	viz.render()
+	section.firstChild.appendChild(viz.el)
+
